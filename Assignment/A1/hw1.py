@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from itertools import permutations
 
 # Cell Definition
 #   - cellType: monster/mirror
 #   - value for monster: 0 for none, 1 for Ghost, 2 for Vampire, 3 for Zombie
 #   - value for mirror: 0 for \, 1 for /
 #   - fixed: indicating whether this cell is known for sure. Should always be `True` for mirrors
+
+
 class Cell:
     def __init__(self, cellType, value, fixed):
         self.cellType = cellType
@@ -39,9 +42,9 @@ PUZZLESIZE = 4
 # No random generation process is taken. Please refer to https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/undead.html to initiate the puzzle for current stage.
 def initPuzzle():
     amount = {
-        "ghost": 0,
-        "vampire": 0,
-        "zombie": 0
+        "ghost": 2,
+        "vampire": 2,
+        "zombie": 8
     }
 
     # Let's start with a 4x4 puzzle
@@ -51,25 +54,25 @@ def initPuzzle():
     cells3 = []
     cells4 = []
 
-    cells1.append(Cell('monster', 0, False))
-    cells1.append(Cell('monster', 0, False))
-    cells1.append(Cell('monster', 0, False))
-    cells1.append(Cell('monster', 0, False))
+    cells1.append(Cell('monster', 2, False))
+    cells1.append(Cell('monster', 3, False))
+    cells1.append(Cell('monster', 3, False))
+    cells1.append(Cell('monster', 3, False))
 
-    cells2.append(Cell('monster', 0, False))
-    cells2.append(Cell('monster', 0, False))
-    cells2.append(Cell('monster', 0, False))
-    cells2.append(Cell('monster', 0, False))
+    cells2.append(Cell('monster', 3, False))
+    cells2.append(Cell('mirror', 0, False))
+    cells2.append(Cell('monster', 3, False))
+    cells2.append(Cell('monster', 3, False))
 
-    cells3.append(Cell('monster', 0, False))
-    cells3.append(Cell('monster', 0, False))
-    cells3.append(Cell('monster', 0, False))
-    cells3.append(Cell('monster', 0, False))
+    cells3.append(Cell('monster', 1, False))
+    cells3.append(Cell('monster', 1, False))
+    cells3.append(Cell('mirror', 1, False))
+    cells3.append(Cell('monster', 3, False))
 
-    cells4.append(Cell('monster', 0, False))
-    cells4.append(Cell('monster', 0, False))
-    cells4.append(Cell('monster', 0, False))
-    cells4.append(Cell('monster', 0, False))
+    cells4.append(Cell('monster', 2, False))
+    cells4.append(Cell('mirror', 0, False))
+    cells4.append(Cell('monster', 3, False))
+    cells4.append(Cell('mirror', 0, False))
 
     cells.append(cells1)
     cells.append(cells2)
@@ -140,6 +143,64 @@ def printPuzzle(cells, borders, amount):
     print('\n')
 
 
+# TODO: Implementation required
+def isValidPuzzle(cells, borders):
+    return
+
+
+# Deprecated code. Using itertools instead for now
+# Generate all permutations of the given list
+# def getPermutation(monsterNumList):
+#     l = []
+#     print(monsterNumList)
+#     if len(monsterNumList) <= 1:
+#         return [monsterNumList]
+#     for i in range(len(monsterNumList)):
+#         c = monsterNumList[i]
+#         remList = monsterNumList[:i] + monsterNumList[i+1:]
+#         for p in getPermutation(remList):
+#             print(p)
+#             subList = [c] + p
+#             if subList not in l:
+#                 l.append(subList)
+#     return l
+
+
+def findAllSolutions(cells, borders, amount):
+    totalSol = 0
+
+    # Get a plain list of monsters TBD
+    monsterNumList = []
+    for _ in range(amount["ghost"]):
+        monsterNumList.append(1)
+
+    for _ in range(amount["vampire"]):
+        monsterNumList.append(2)
+
+    for _ in range(amount["zombie"]):
+        monsterNumList.append(3)
+
+    # monsterPerm = getPermutation(monsterNumList)
+    monsterPerm = permutations(
+        monsterNumList, len(monsterNumList))
+    for trial in set(monsterPerm):
+        index = 0
+        for lenIndex in range(PUZZLESIZE):
+            for widIndex in range(PUZZLESIZE):
+                if cells[lenIndex][widIndex].cellType == "monster":
+                    cells[lenIndex][widIndex].value = trial[index]
+                    index += 1
+        if isValidPuzzle(cells, borders) == True:
+            totalSol += 1
+            if totalSol <= 3:
+                print("Solution " + totalSol + ":")
+                printPuzzle(cells, borders, amount)
+
+    return totalSol
+
+
 if __name__ == "__main__":
     cells, borders, amount = initPuzzle()
     printPuzzle(cells, borders, amount)
+    solNum = findAllSolutions(cells, borders, amount)
+    print("There are " + solNum + " solutions in all")
