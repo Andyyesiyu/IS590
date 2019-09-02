@@ -207,5 +207,7 @@ def findAllSolutions(cells, borders, amount):
 if __name__ == "__main__":
     cells, borders, amount = initPuzzle()
     printPuzzle(cells, borders, amount)
+    print("Start finding solutions...")
+    print("It might take a few minutes, please be patient...")
     solNum = findAllSolutions(cells, borders, amount)
     print("There are " + str(solNum) + " solutions in all")
