@@ -150,14 +150,14 @@ def isValidPuzzle(cells, borders):
 
 # Deprecated code. Using itertools instead for now
 # Generate all permutations of the given list
-# def getPermutation(monsterNumList):
+# def getPermutation(monsterList):
 #     l = []
-#     print(monsterNumList)
-#     if len(monsterNumList) <= 1:
-#         return [monsterNumList]
-#     for i in range(len(monsterNumList)):
-#         c = monsterNumList[i]
-#         remList = monsterNumList[:i] + monsterNumList[i+1:]
+#     print(monsterList)
+#     if len(monsterList) <= 1:
+#         return [monsterList]
+#     for i in range(len(monsterList)):
+#         c = monsterList[i]
+#         remList = monsterList[:i] + monsterList[i+1:]
 #         for p in getPermutation(remList):
 #             print(p)
 #             subList = [c] + p
@@ -168,26 +168,26 @@ def isValidPuzzle(cells, borders):
 
 # Get a plain list of monsters TBD
 def getMonsterList(amount):
-    monsterNumList = []
+    monsterList = []
     for _ in range(amount["ghost"]):
-        monsterNumList.append(1)
+        monsterList.append(1)
 
     for _ in range(amount["vampire"]):
-        monsterNumList.append(2)
+        monsterList.append(2)
 
     for _ in range(amount["zombie"]):
-        monsterNumList.append(3)
+        monsterList.append(3)
 
-    return monsterNumList
+    return monsterList
 
 
 def findAllSolutions(cells, borders, amount):
     totalSol = 0
 
-    monsterNumList = getMonsterList(amount)
-    # monsterPerm = getPermutation(monsterNumList)
+    monsterList = getMonsterList(amount)
+    # monsterPerm = getPermutation(monsterList)
     monsterPerm = permutations(
-        monsterNumList, len(monsterNumList))
+        monsterList, len(monsterList))
     for trial in set(monsterPerm):
         index = 0
         for lenIndex in range(PUZZLESIZE):
