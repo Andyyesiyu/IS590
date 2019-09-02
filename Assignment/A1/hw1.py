@@ -166,10 +166,8 @@ def isValidPuzzle(cells, borders):
 #     return l
 
 
-def findAllSolutions(cells, borders, amount):
-    totalSol = 0
-
-    # Get a plain list of monsters TBD
+# Get a plain list of monsters TBD
+def getMonsterList(amount):
     monsterNumList = []
     for _ in range(amount["ghost"]):
         monsterNumList.append(1)
@@ -180,6 +178,13 @@ def findAllSolutions(cells, borders, amount):
     for _ in range(amount["zombie"]):
         monsterNumList.append(3)
 
+    return monsterNumList
+
+
+def findAllSolutions(cells, borders, amount):
+    totalSol = 0
+
+    monsterNumList = getMonsterList(amount)
     # monsterPerm = getPermutation(monsterNumList)
     monsterPerm = permutations(
         monsterNumList, len(monsterNumList))
