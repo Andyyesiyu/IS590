@@ -145,7 +145,7 @@ def printPuzzle(cells, borders, amount):
 
 # TODO: Implementation required
 def isValidPuzzle(cells, borders):
-    return
+    return True
 
 
 # Deprecated code. Using itertools instead for now
@@ -198,7 +198,7 @@ def findAllSolutions(cells, borders, amount):
         if isValidPuzzle(cells, borders) == True:
             totalSol += 1
             if totalSol <= 3:
-                print("Solution " + totalSol + ":")
+                print("Solution " + str(totalSol) + ":")
                 printPuzzle(cells, borders, amount)
 
     return totalSol
@@ -208,4 +208,4 @@ if __name__ == "__main__":
     cells, borders, amount = initPuzzle()
     printPuzzle(cells, borders, amount)
     solNum = findAllSolutions(cells, borders, amount)
-    print("There are " + solNum + " solutions in all")
+    print("There are " + str(solNum) + " solutions in all")
