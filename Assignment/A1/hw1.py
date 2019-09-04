@@ -8,8 +8,6 @@ from itertools import permutations
 #   - value for monster: 0 for none, 1 for Ghost, 2 for Vampire, 3 for Zombie
 #   - value for mirror: 0 for \, 1 for /
 #   - fixed: indicating whether this cell is known for sure. Should always be `True` for mirrors
-
-
 class Cell:
     def __init__(self, cellType, value, fixed):
         self.cellType = cellType
@@ -38,7 +36,6 @@ def mirror(i):
 
 PUZZLESIZE = 4
 
-
 # No random generation process is taken. Please refer to https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/undead.html to initiate the puzzle for current stage.
 def initPuzzle():
     amount = {
@@ -48,6 +45,7 @@ def initPuzzle():
     }
 
     # Let's start with a 4x4 puzzle
+    # Append more cells if needed
     cells = [
         [Cell('monster', 2, False), Cell('monster', 3, False), Cell('monster', 3, False), Cell('monster', 3, False)],
         [Cell('monster', 3, False), Cell('mirror', 0, False), Cell('monster', 3, False), Cell('monster', 3, False)],
@@ -95,6 +93,12 @@ def printPuzzle(cells, borders, amount):
     print('\n')
 
 
+# CheckInfo definition:
+#   - visibleNum: the sum of visible monsters on a specific edge
+#  - direction: 0 for right, 1 for down, 2 for left, 3 for up
+#  - hasMetMirror: determine whether has met a mirror on the route. Should always be true for a route after meeting the first mirror.
+#  - currentVisNum: counter of monsters seen on the route for now
+#  - corrdinate: label where are we in the puzzle w/ [0,1] stand for row 1, column 2
 class CheckInfo:
     def __init__(self, visibleNum, direction, hasMetMirror, currentVisNum, coordinate):
         self.visibleNum = visibleNum
