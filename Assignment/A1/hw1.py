@@ -143,27 +143,102 @@ def printPuzzle(cells, borders, amount):
     print('\n')
 
 
-# TODO: Implementation required
+class CheckInfo:
+    def __init__(self, visibleNum, direction, hasMetMirror, currentVisNum, coordinate):
+        self.visibleNum = visibleNum
+        self.direction = direction
+        self.hasMetMirror = hasMetMirror
+        self.currentVisNum = currentVisNum
+        self.coordinate = coordinate
+
+
+# TODO(Optional): Check the total number of monsters in the puzzle. Make sure it'll not exceed the limitation. (Implement if puzzle is randonmly generated)
 def isValidPuzzle(cells, borders):
+    for i in range(4):
+        for j in range(PUZZLESIZE):
+            # coordinate = initCoordinate(i, j)
+            # visibleNum = borders[i][j]
+            info = CheckInfo(visibleNum=borders[i][j], direction=i,
+                             hasMetMirror=False, currentVisNum=0, coordinate=initCoordinate(i, j))
+            result = isValidRoute(
+                cells, info)
+            if result == False:
+                return False
     return True
 
 
-# Deprecated code. Using itertools instead for now
-# Generate all permutations of the given list
-# def getPermutation(monsterList):
-#     l = []
-#     print(monsterList)
-#     if len(monsterList) <= 1:
-#         return [monsterList]
-#     for i in range(len(monsterList)):
-#         c = monsterList[i]
-#         remList = monsterList[:i] + monsterList[i+1:]
-#         for p in getPermutation(remList):
-#             print(p)
-#             subList = [c] + p
-#             if subList not in l:
-#                 l.append(subList)
-#     return l
+def initCoordinate(i, j):
+    if i == 0:
+        return [j, -1]
+    if i == 1:
+        return [-1, j]
+    if i == 2:
+        return [j, PUZZLESIZE]
+    if i == 3:
+        return [PUZZLESIZE, j]
+
+
+def isValidRoute(cells, info):
+    # Move to next cell
+    if info.direction == 0:
+        info.coordinate[1] += 1
+    if info.direction == 1:
+        info.coordinate[0] += 1
+    if info.direction == 2:
+        info.coordinate[1] -= 1
+    if info.direction == 3:
+        info.coordinate[0] -= 1
+
+    # Check if out of boundary, indicating the end of the route
+    if info.coordinate[0] < 0 or info.coordinate[0] >= PUZZLESIZE or info.coordinate[1] < 0 or info.coordinate[1] >= PUZZLESIZE:
+        if info.currentVisNum == info.visibleNum:
+            return True
+        else:
+            return False
+
+    thisCell = cells[info.coordinate[0]][info.coordinate[1]]
+
+    # Check if mirror
+    if thisCell.cellType == "mirror":
+        info.hasMetMirror = True
+        if thisCell.value == 0:
+            if info.direction == 0:
+                info.direction = 1
+            elif info.direction == 1:
+                info.direction = 0
+            elif info.direction == 2:
+                info.direction = 3
+            elif info.direction == 3:
+                info.direction = 2
+            else:
+                print("Error when asserting direction")
+                exit(0)
+        elif thisCell.value == 1:
+            if info.direction in range(0, 4):
+                info.direction = 3 - info.direction
+            else:
+                print("Error when asserting direction")
+                exit(0)
+        else:
+            print("Invalid mirror value.")
+            exit(0)
+        return isValidRoute(cells, info)
+
+    # Check if monster
+    if thisCell.cellType == "monster":
+        if thisCell.value == 0:
+            return False
+        if thisCell.value == 1 and info.hasMetMirror == True:
+            info.currentVisNum += 1
+        if thisCell.value == 2 and info.hasMetMirror == False:
+            info.currentVisNum += 1
+        if thisCell.value == 3:
+            info.currentVisNum += 1
+
+        if info.currentVisNum > info.visibleNum:
+            return False
+        else:
+            return isValidRoute(cells, info)
 
 
 # Get a plain list of monsters TBD
@@ -185,7 +260,6 @@ def findAllSolutions(cells, borders, amount):
     totalSol = 0
 
     monsterList = getMonsterList(amount)
-    # monsterPerm = getPermutation(monsterList)
     monsterPerm = permutations(
         monsterList, len(monsterList))
     for trial in set(monsterPerm):
@@ -210,4 +284,4 @@ if __name__ == "__main__":
     print("Start finding solutions...")
     print("It might take a few minutes, please be patient...")
     solNum = findAllSolutions(cells, borders, amount)
-    print("There are " + str(solNum) + " solutions in all")
+    print("There are " + str(solNum) + " solution(s) in all")
