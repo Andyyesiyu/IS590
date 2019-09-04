@@ -48,70 +48,22 @@ def initPuzzle():
     }
 
     # Let's start with a 4x4 puzzle
-    cells = []
-    cells1 = []
-    cells2 = []
-    cells3 = []
-    cells4 = []
-
-    cells1.append(Cell('monster', 2, False))
-    cells1.append(Cell('monster', 3, False))
-    cells1.append(Cell('monster', 3, False))
-    cells1.append(Cell('monster', 3, False))
-
-    cells2.append(Cell('monster', 3, False))
-    cells2.append(Cell('mirror', 0, False))
-    cells2.append(Cell('monster', 3, False))
-    cells2.append(Cell('monster', 3, False))
-
-    cells3.append(Cell('monster', 1, False))
-    cells3.append(Cell('monster', 1, False))
-    cells3.append(Cell('mirror', 1, False))
-    cells3.append(Cell('monster', 3, False))
-
-    cells4.append(Cell('monster', 2, False))
-    cells4.append(Cell('mirror', 0, False))
-    cells4.append(Cell('monster', 3, False))
-    cells4.append(Cell('mirror', 0, False))
-
-    cells.append(cells1)
-    cells.append(cells2)
-    cells.append(cells3)
-    cells.append(cells4)
+    cells = [
+        [Cell('monster', 2, False), Cell('monster', 3, False), Cell('monster', 3, False), Cell('monster', 3, False)],
+        [Cell('monster', 3, False), Cell('mirror', 0, False), Cell('monster', 3, False), Cell('monster', 3, False)],
+        [Cell('monster', 1, False), Cell('monster', 1, False), Cell('mirror', 1, False), Cell('monster', 3, False)],
+        [Cell('monster', 2, False), Cell('mirror', 0, False), Cell('monster', 3, False), Cell('mirror', 0, False)]
+    ]
 
     # For borders, the first dimension of the array indicates which border it is taking care of.
     # To be specific, 0 for left border, 1 for top border, 2 for right border and 3 for bottom border.
     # Then borders[0][0] indicates the first row of left border, borders[0][1] indicates the second row of left border, borders[1][0] indicates the first column of the top border and so on.
-    borders = []
-    borders1 = []
-    borders2 = []
-    borders3 = []
-    borders4 = []
-
-    borders1.append(4)
-    borders1.append(3)
-    borders1.append(2)
-    borders1.append(1)
-
-    borders2.append(3)
-    borders2.append(3)
-    borders2.append(4)
-    borders2.append(3)
-
-    borders3.append(4)
-    borders3.append(3)
-    borders3.append(2)
-    borders3.append(3)
-
-    borders4.append(3)
-    borders4.append(0)
-    borders4.append(2)
-    borders4.append(3)
-
-    borders.append(borders1)
-    borders.append(borders2)
-    borders.append(borders3)
-    borders.append(borders4)
+    borders = [
+        [4, 3, 2, 1],
+        [3, 3, 4, 3],
+        [4, 3, 2, 3],
+        [3, 0, 2, 3]
+    ]
 
     return cells, borders, amount
 
