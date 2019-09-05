@@ -3,6 +3,7 @@
 
 from itertools import permutations
 
+
 # Cell Definition
 #   - cellType: monster/mirror
 #   - value for monster: 0 for none, 1 for Ghost, 2 for Vampire, 3 for Zombie
@@ -34,33 +35,44 @@ def mirror(i):
     return switcher.get(i, "Invalid mirror type!")
 
 
-PUZZLESIZE = 4
+PUZZLESIZE = 7
+
 
 # No random generation process is taken. Please refer to https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/undead.html to initiate the puzzle for current stage.
 def initPuzzle():
     amount = {
-        "ghost": 2,
-        "vampire": 2,
-        "zombie": 8
+        "ghost": 12,
+        "vampire": 15,
+        "zombie": 2
     }
 
-    # Let's start with a 4x4 puzzle
+    # Remember to modify PUZZLESIZE & amount above, also borders while trying to start a new puzzle
     # Append more cells if needed
     cells = [
-        [Cell('monster', 2, False), Cell('monster', 3, False), Cell('monster', 3, False), Cell('monster', 3, False)],
-        [Cell('monster', 3, False), Cell('mirror', 0, False), Cell('monster', 3, False), Cell('monster', 3, False)],
-        [Cell('monster', 1, False), Cell('monster', 1, False), Cell('mirror', 1, False), Cell('monster', 3, False)],
-        [Cell('monster', 2, False), Cell('mirror', 0, False), Cell('monster', 3, False), Cell('mirror', 0, False)]
+        [Cell('monster', 0, False), Cell('mirror', 0, False), Cell('monster', 0, False), Cell(
+            'monster', 0, False), Cell('mirror', 0, False), Cell('monster', 0, False), Cell('monster', 0, False)],
+        [Cell('mirror', 0, False), Cell('monster', 0, False), Cell('monster', 0, False), Cell(
+            'mirror', 1, False), Cell('mirror', 1, False), Cell('monster', 0, False), Cell('mirror', 1, False)],
+        [Cell('mirror', 0, False), Cell('monster', 0, False), Cell('monster', 0, False), Cell(
+            'monster', 0, False), Cell('mirror', 0, False), Cell('mirror', 1, False), Cell('monster', 0, False)],
+        [Cell('monster', 0, False), Cell('mirror', 0, False), Cell('monster', 0, False), Cell(
+            'mirror', 1, False), Cell('monster', 0, False), Cell('monster', 0, False), Cell('monster', 0, False)],
+        [Cell('monster', 0, False), Cell('mirror', 1, False), Cell('monster', 0, False), Cell(
+            'monster', 0, False), Cell('mirror', 0, False), Cell('monster', 0, False), Cell('monster', 0, False)],
+        [Cell('mirror', 1, False), Cell('monster', 0, False), Cell('mirror', 1, False), Cell(
+            'monster', 0, False), Cell('mirror', 0, False), Cell('monster', 0, False), Cell('monster', 0, False)],
+        [Cell('mirror', 0, False), Cell('monster', 0, False), Cell('monster', 0, False), Cell(
+            'mirror', 0, False), Cell('monster', 0, False), Cell('mirror', 0, False), Cell('mirror', 1, False)]
     ]
 
     # For borders, the first dimension of the array indicates which border it is taking care of.
     # To be specific, 0 for left border, 1 for top border, 2 for right border and 3 for bottom border.
     # Then borders[0][0] indicates the first row of left border, borders[0][1] indicates the second row of left border, borders[1][0] indicates the first column of the top border and so on.
     borders = [
-        [4, 3, 2, 1],
-        [3, 3, 4, 3],
-        [4, 3, 2, 3],
-        [3, 0, 2, 3]
+        [4, 3, 0, 1, 1, 0, 0],
+        [2, 3, 7, 0, 2, 2, 1],
+        [0, 6, 5, 1, 1, 4, 0],
+        [0, 0, 2, 4, 0, 4, 0]
     ]
 
     return cells, borders, amount
@@ -212,6 +224,7 @@ def getMonsterList(amount):
     return monsterList
 
 
+# TODO(optional): Fill those cells whose starting edge num is 0. Execute permutation after these cells are determined.
 def findAllSolutions(cells, borders, amount):
     totalSol = 0
 
