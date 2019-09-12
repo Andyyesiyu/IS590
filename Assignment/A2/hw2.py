@@ -165,7 +165,7 @@ def getNextEdge(edges, endpoint):
     validMove = False
     validEdge = False
     while not validEdge:
-        print("Please input a valid move:")
+        print("Please input a valid move (e.g. (0,0), (0,1)):")
         newMove = input()
         # Always require two points as input
         # For example, ((0, 0), (1,0))
@@ -248,6 +248,10 @@ if __name__ == "__main__":
     finished = False
 
     endpoint = [(-1, -1), (-1, -1)]
+
+    print("Game starts!")
+    printPuzzle(points)
+    print('\n')
 
     while not finished:
         print(turnMap[turn], "'s turn!")
