@@ -49,10 +49,11 @@ def rollTurn():
         return 1
 
 
-turnMap = {0: "Player1", 1: "Player2"}
+turnMap = {0: "Computer", 1: "Player"}
 
 
 def checkValidEdge(points, edges, newEdge, endpoint):
+    # print(newEdge.p1, newEdge.p2, endpoint)
     # print("Start checking edge validation...")
     # Check if endpoints match
     if not (-1, -1) in endpoint:
@@ -79,7 +80,7 @@ def checkValidEdge(points, edges, newEdge, endpoint):
             if edge.slope == 'infinity':
                 intersectY = newEdge.slope*edge.p1[0] + newEdge.intersect
                 if newEdge.slope == 0:
-                    if (edge.p1[0], intersectY) not in endpoint and edge.p1[0] > min(newEdge.p1[0], newEdge.p2[0]) and edge.p1[0] < max(newEdge.p1[0], newEdge.p2[0]) and intersectY >= min(edge.p1[1], edge.p2[1]) and intersectY <= max(edge.p1[1], edge.p2[1]):
+                    if (edge.p1[0], intersectY) != newEdge.p1 and (edge.p1[0], intersectY) != newEdge.p2 and edge.p1[0] > min(newEdge.p1[0], newEdge.p2[0]) and edge.p1[0] < max(newEdge.p1[0], newEdge.p2[0]) and intersectY >= min(edge.p1[1], edge.p2[1]) and intersectY <= max(edge.p1[1], edge.p2[1]):
                         # print("HERE1")
                         return False
                 if intersectY > min(newEdge.p1[1], newEdge.p2[1]) and intersectY < max(newEdge.p1[1], newEdge.p2[1]):
@@ -90,7 +91,7 @@ def checkValidEdge(points, edges, newEdge, endpoint):
                 if (intersectY == edge.p1[1] or intersectY == edge.p2[1]) and (edge.p1 not in endpoint and edge.p2 not in endpoint) and newEdge.p1[0] > min(edge.p1[0], edge.p2[0]) and newEdge.p1[0] < max(edge.p1[0], edge.p2[0]):
                     # print("HERE3")
                     return False
-                if intersectY > min(edge.p1[1], edge.p2[1]) and intersectY < max(edge.p1[1], edge.p2[1]):
+                if intersectY > min(newEdge.p1[1], newEdge.p2[1]) and intersectY < max(newEdge.p1[1], newEdge.p2[1]):
                     # print("HERE6")
                     return False
             else:
@@ -158,7 +159,24 @@ def moveToEdge(newMove):
 
 
 def generateNextEdge(points, edges, endpoint):
-    return (0, 0)
+    for i in range(height):
+        for j in range(width):
+            if not points[i][j]:
+                if not (-1, -1) in endpoint:
+                    for ep in endpoint:
+                        newMove = ((i, j), (ep[1], ep[0]))
+                else:
+                    newMove = ((i, j), (0, 0))
+                newEdge, validMove = moveToEdge(newMove)
+                if not validMove:
+                    continue
+                validEdge = checkValidEdge(
+                    points, edges, newEdge, endpoint)
+                if not validEdge:
+                    continue
+                else:
+                    return newEdge
+    return newEdge
 
 
 def getNextEdge(edges, endpoint):
@@ -169,8 +187,12 @@ def getNextEdge(edges, endpoint):
         newMove = input()
         # Always require two points as input
         # For example, ((0, 0), (1,0))
-        newMove = make_tuple(newMove)
-        if len(newMove) != 2:
+        try:
+            newMove = make_tuple(newMove)
+        except:
+            continue
+
+        if type(newMove) != tuple or len(newMove) != 2:
             continue
         newEdge, validMove = moveToEdge(newMove)
         # print(validMove, "validMove")
@@ -187,8 +209,8 @@ def getNextEdge(edges, endpoint):
 
 def move(turn, points, edges, endpoint):
     if turn == 0:
-        # newEdge = generateNextEdge(points, edges, endpoint)
-        newEdge = getNextEdge(edges, endpoint)
+        newEdge = generateNextEdge(points, edges, endpoint)
+        # newEdge = getNextEdge(edges, endpoint)
     else:
         newEdge = getNextEdge(edges, endpoint)
     return newEdge
@@ -256,10 +278,15 @@ if __name__ == "__main__":
     while not finished:
         print(turnMap[turn], "'s turn!")
         newEdge = move(turn, points, edges, endpoint)
+        print(turnMap[turn], "takes (", newEdge.p1[1], ",",
+              newEdge.p1[0], "), (", newEdge.p2[1], ",", newEdge.p2[0], ")")
+
         edges.append(newEdge)
         updatePuzzle(points, newEdge, endpoint)
-        # print(endpoint)
         printPuzzle(points)
+
+        print("endpoints are now:", "(", endpoint[0][1], ",", endpoint[0]
+              [0], "),", "(", endpoint[1][1], ",", endpoint[1][0], ")")
         print('\n')
         finished = checkIfFinished(points, edges, endpoint)
         turn = (turn + 1) % 2
