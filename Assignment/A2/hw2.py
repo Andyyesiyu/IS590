@@ -88,9 +88,10 @@ def checkValidEdge(points, edges, newEdge, endpoint):
                     return False
             elif newEdge.slope == 'infinity':
                 intersectY = edge.slope*newEdge.p1[0] + edge.intersect
-                if (intersectY == edge.p1[1] or intersectY == edge.p2[1]) and (edge.p1 not in endpoint and edge.p2 not in endpoint) and newEdge.p1[0] > min(edge.p1[0], edge.p2[0]) and newEdge.p1[0] < max(edge.p1[0], edge.p2[0]):
-                    # print("HERE3")
-                    return False
+                if intersectY == math.floor(intersectY) and math.floor(intersectY) == edge.p1[1] or math.floor(intersectY) == edge.p2[1]:
+                    temp = (newEdge.p1[0], intersectY)
+                    if temp not in endpoint:
+                        return False
                 if intersectY > min(newEdge.p1[1], newEdge.p2[1]) and intersectY < max(newEdge.p1[1], newEdge.p2[1]):
                     # print("HERE6")
                     return False
@@ -165,17 +166,30 @@ def generateNextEdge(points, edges, endpoint):
                 if not (-1, -1) in endpoint:
                     for ep in endpoint:
                         newMove = ((i, j), (ep[1], ep[0]))
+                        newEdge, validMove = moveToEdge(newMove)
+                        if not validMove:
+                            pass
+                        else:
+                            validEdge = checkValidEdge(
+                                points, edges, newEdge, endpoint)
+                            if not validEdge:
+                                pass
+                            else:
+                                return newEdge
                 else:
                     newMove = ((i, j), (0, 0))
-                newEdge, validMove = moveToEdge(newMove)
-                if not validMove:
-                    continue
-                validEdge = checkValidEdge(
-                    points, edges, newEdge, endpoint)
-                if not validEdge:
-                    continue
-                else:
-                    return newEdge
+                    newEdge, validMove = moveToEdge(newMove)
+                    if not validMove:
+                        pass
+                    else:
+                        validEdge = checkValidEdge(
+                            points, edges, newEdge, endpoint)
+                        print(validEdge)
+                        if not validEdge:
+                            pass
+                        else:
+                            return newEdge
+
     return newEdge
 
 
