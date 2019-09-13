@@ -1,0 +1,63 @@
+Please input the height of the puzzle:
+3
+Please input the width of the puzzle:
+3
+Game starts!
+[False, False, False]
+[False, False, False]
+[False, False, False]
+
+
+Computer 's turn!
+True
+Computer takes ( 0 , 1 ), ( 0 , 0 )
+[True, True, False]
+[False, False, False]
+[False, False, False]
+endpoints are now: ( 0 , 1 ), ( 0 , 0 )
+
+
+Player 's turn!
+Please input a valid move (e.g. (0,0), (0,1)):
+(0,1),(2,1)
+Player takes ( 0 , 1 ), ( 2 , 1 )
+[True, True, False]
+[False, True, False]
+[False, True, False]
+endpoints are now: ( 2 , 1 ), ( 0 , 0 )
+
+
+Computer 's turn!
+Computer takes ( 0 , 2 ), ( 2 , 1 )
+[True, True, True]
+[False, True, False]
+[False, True, False]
+endpoints are now: ( 0 , 2 ), ( 0 , 0 )
+
+
+Player 's turn!
+Please input a valid move (e.g. (0,0), (0,1)):
+(0,0),(3,0)
+Invalid input!
+Please input a valid move (e.g. (0,0), (0,1)):
+(0,0),(2,0)
+Player takes ( 0 , 0 ), ( 2 , 0 )
+[True, True, True]
+[True, True, False]
+[True, True, False]
+endpoints are now: ( 0 , 2 ), ( 2 , 0 )
+
+
+Computer 's turn!
+Computer takes ( 1 , 2 ), ( 0 , 2 )
+[True, True, True]
+[True, True, True]
+[True, True, False]
+endpoints are now: ( 1 , 2 ), ( 2 , 0 )
+
+
+[True, True, True]
+[True, True, True]
+[True, True, False]
+No more available moves!
+Player wins!
