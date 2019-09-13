@@ -1,0 +1,10 @@
+Please input the height of the puzzle:
+1
+Please input the width of the puzzle:
+1
+Game starts!
+[False]
+
+
+Computer 's turn!
+Player wins!

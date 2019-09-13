@@ -291,6 +291,9 @@ if __name__ == "__main__":
 
     while not finished:
         print(turnMap[turn], "'s turn!")
+        if width == 1 and height == 1:
+            print(turnMap[(turn+1) % 2], "wins!")
+            exit(0)
         newEdge = move(turn, points, edges, endpoint)
         print(turnMap[turn], "takes (", newEdge.p1[1], ",",
               newEdge.p1[0], "), (", newEdge.p2[1], ",", newEdge.p2[0], ")")
