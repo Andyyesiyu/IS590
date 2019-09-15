@@ -100,9 +100,30 @@ directMap = {
 
 
 # Find repeated path in generate phase
-# Check if points[newMove].prev = current, return True
-def findRepeated(points, current, newMove):
-    return points[newMove[0]][newMove[1]].prev == current
+# Check if U turn and newMove enter main result route
+# points[newMove].prev = current, return True
+def checkValidation(points, current, newMove, dirToNew, width, height):
+    # Check if start point
+    if not points[current[0]][current[1]].prev:
+        return True
+
+    # Check U turn
+    if points[current[0]][current[1]].prev == newMove:
+        return False
+
+    # Check on route
+    if not points[newMove[0]][newMove[1]].nxt:
+        return True
+
+    # Check if corner/edge
+    if newMove[0] == 0 or newMove[0] == height - 1 or newMove[1] == 0 or newMove[1] == width - 1:
+        return False
+
+    # Check into solution
+    if directMap[(dirToNew, points[newMove[0]][newMove[1]].dirToNxt)] in points[newMove[0]][newMove[1]].arrows:
+        return False
+
+    return True
 
 
 # Our puzzle will always start from the left border and ends on the right border for simplicity
@@ -112,21 +133,21 @@ def findRepeated(points, current, newMove):
 def findValidMove(points, current, width, height):
     # check whether in a line, whether conflict with
     validMoveList = []
-    if current[0] - 1 >= 0 and points[current[0]][current[1]].prev[0] != current[0] - 1:
+    if current[0] - 1 >= 0:
         newMove = (current[0] - 1, current[1])
-        if findRepeated(points, current, newMove) == False:
+        if checkValidation(points, current, newMove, 'n', width, height):
             validMoveList.append(newMove)
-    if current[0] + 1 < width and points[current[0]+1][current[1]].prev[0] != current[0] + 1:
+    if current[0] + 1 < width:
         newMove = (current[0] + 1, current[1])
-        if findRepeated(points, current, newMove) == False:
+        if checkValidation(points, current, newMove, 's', width, height):
             validMoveList.append(newMove)
-    if current[1] - 1 >= 0 and points[current[0]][current[1] - 1].prev[1] != current[1] - 1:
+    if current[1] - 1 >= 0:
         newMove = (current[0], current[1] - 1)
-        if findRepeated(points, current, newMove) == False:
+        if checkValidation(points, current, newMove, 'w', width, height):
             validMoveList.append(newMove)
-    if current[1] + 1 < height and points[current[0]][current[1] + 1].prev[1] != current[1] + 1:
+    if current[1] + 1 < height:
         newMove = (current[0], current[1] + 1)
-        if findRepeated(points, current, newMove) == False:
+        if checkValidation(points, current, newMove, 'e', width, height):
             validMoveList.append(newMove)
 
     return validMoveList
@@ -152,14 +173,41 @@ def pushArrow(points, current, arrow):
     arrowList = [arrow]
     while len(arrowList) > 0:
         candidate = arrowList.pop(0)
-        points[current[0]][current[1]].arrows.append(candidate)
+        if candidate not in points[current[0]][current[1]].arrows:
+            points[current[0]][current[1]].arrows.append(candidate)
 
         # Check if any additional arrow after appending candidate
         for targetArr in pairMap[candidate]:
             if targetArr in points[current[0]][current[1]].arrows:
-                addtionArrow = outcomeMap[tuple(sorted([targetArr, arrow]))]
-                arrowList.append(addtionArrow)
+                try:
+                    addtionArrow = outcomeMap[tuple(
+                        sorted([targetArr, arrow]))]
+                    arrowList.append(addtionArrow)
+                except:
+                    pass
     return
+
+
+def visitBlocks(visitedBlock, curernt, dirToNxt, width, height):
+    toCheckBlock = []
+    if dirToNxt == "s":
+        toCheckBlock.append((curernt[0], curernt[1]-1))
+        toCheckBlock.append((curernt[0], curernt[1]+1))
+    if dirToNxt == "n":
+        toCheckBlock.append((curernt[0]-1, curernt[1]-1))
+        toCheckBlock.append((curernt[0]-1, curernt[1]+1))
+    if dirToNxt == "e":
+        toCheckBlock.append((curernt[0]-1, curernt[1]))
+        toCheckBlock.append((curernt[0]+1, curernt[1]))
+    if dirToNxt == "w":
+        toCheckBlock.append((curernt[0]-1, curernt[1]-1))
+        toCheckBlock.append((curernt[0]+1, curernt[1]-1))
+
+    for i, j in toCheckBlock:
+        if 0 <= i < width-1 and 0 <= j < height-1:
+            visitedBlock[i][j] = True
+
+    return all([all(i) for i in visitedBlock])
 
 
 def findSolution(points, width, height):
@@ -169,17 +217,24 @@ def findSolution(points, width, height):
     points[current[0]][0]
     finished = False
     solution = []
+    route = []
+    visitedBlock = [[False for _ in range(width-1)] for _ in range(height-1)]
+    allBlockVisited = False
 
     while not finished:
         # Get all valid moves and randomly pick one
         validMovelist = findValidMove(points, current, width, height)
+        if not validMovelist:
+            return None, None, None, False
+        print("validMovelist = ", validMovelist)
+        print("current = ", current)
         nextMove = random.choice(validMovelist)
+        print("nextMove = ", nextMove)
         points[nextMove[0]][nextMove[1]].prev = current
+        print("UpdatedPrev = ", points[nextMove[0]][nextMove[1]].prev)
         points[current[0]][current[1]].next = nextMove
         dirToNxt = getDirection(current, nextMove)
         points[current[0]][current[1]].dirToNxt = dirToNxt
-
-        # TODO: update `finished` once nextMove is found, add `allBlockVisited` for checking whether finished
 
         # Get  the direction from current point to the picked move and get the corresponding arrow
         if points[current[0]][current[1]].prev:
@@ -190,10 +245,35 @@ def findSolution(points, width, height):
             arrow = directMap[dirToNxt, dirToNxt]
         pushArrow(points, current, arrow)
 
+        # TODO: update `finished` once nextMove is found, add `allBlockVisited` for checking whether finished
+        # Visit block
+        allBlockVisited = visitBlocks(
+            visitedBlock, current, dirToNxt, width, height)
+        print("allBlockVisited = ", allBlockVisited)
+        if allBlockVisited and ((nextMove[1] == width - 1 or nextMove[1] == 0 or nextMove[0] == 0 or nextMove[0] == height - 1) and nextMove != start):
+            finished = True
+
+        route.append(current)
         current = nextMove
         solution.append(dirToNxt)
 
-    return start, solution
+    # Generate arrow for endpoint
+    prev0 = points[current[0]][current[1]].prev[0]
+    prev1 = points[current[0]][current[1]].prev[1]
+    if current[0] == 0:
+        dirToNxt = "n"
+    if current[0] == height - 1:
+        dirToNxt = "s"
+    if current[1] == 0:
+        dirToNxt = "w"
+    if current[1] == width - 1:
+        dirToNxt = "e"
+    arrow = directMap[points[prev0][prev1].dirToNxt, dirToNxt]
+    pushArrow(points, current, arrow)
+    solution.append(dirToNxt)
+    route.append(current)
+
+    return start, solution, route, True
 
 
 # TODO: implement `fillRemPoints`
@@ -203,15 +283,18 @@ def fillRemPoints(points):
 
 
 def generatePuzzle(width, height):
-    points = initPoints(width, height)
-    start, solution = findSolution(points, width, height)
-    # fillRemPoints(points)
-    return points, start, solution
+    success = False
+    while not success:
+        points = initPoints(width, height)
+        start, solution, route, success = findSolution(points, width, height)
+        # fillRemPoints(points)
+    return points, start, solution, route
 
 
 if __name__ == "__main__":
     width = 4
     height = 4
 
-    points, start, solution = generatePuzzle(width, height)
+    points, start, solution, route = generatePuzzle(width, height)
     printPuzzle(points)
+    print(start, solution, route)
